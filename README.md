@@ -4,7 +4,9 @@ A modern e-commerce web application for sneakers built with React and Material-U
 
 ## 🌐 Live Demo
 
-🔗 \*\*[View Live Project] https://sneakers-store-five.vercel.app/
+[![Live Demo](https://img.shields.io/badge/demo-online-green.svg)](https://sneakers-store-five.vercel.app/)
+
+**[View Live Project →](https://sneakers-store-five.vercel.app/)**
 
 ## ✨ Features
 
@@ -26,31 +28,3 @@ A modern e-commerce web application for sneakers built with React and Material-U
 - **Vite** - Build tool
 - **Context API** - State management
 - **ESLint** - Code linting
-
-sneackers-shop-project/
-├── src/
-│ ├── app/
-│ ├── assets/
-│ │ └── hero/ # Hero section images
-│ ├── components/
-│ │ ├── Footer.jsx
-│ │ ├── Header.jsx
-│ │ ├── ProductCard.jsx
-│ │ ├── SearchBar.jsx # Brand search with autocomplete
-│ │ ├── FilterPanel.jsx # Price & gender filters
-│ │ ├── SortDropdown.jsx # Sorting options
-│ │ └── Pagination.jsx # Page navigation
-│ ├── features/
-│ │ └── products/
-│ │ ├── context.js
-│ │ └── useProducts.js
-│ ├── pages/
-│ │ └── Home/
-│ │ ├── Hero.jsx
-│ │ ├── ProductList.jsx
-│ │ └── index.jsx
-│ ├── App.jsx
-│ ├── main.jsx
-│ └── index.css
-├── package.json
-└── vite.config.js
