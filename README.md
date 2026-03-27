@@ -4,9 +4,11 @@ A modern e-commerce web application for sneakers built with React and Material-U
 
 ## 🌐 Live Demo
 
-[![Live Demo](https://img.shields.io/badge/demo-online-green.svg)](https://sneakers-store-five.vercel.app/)
+## 🌐 Live Demo
 
-**[View Live Project →](https://sneakers-store-five.vercel.app/)**
+[![Live Demo](https://img.shields.io/badge/demo-online-green.svg)](https://sneakers-store-project.vercel.app/)
+
+**[View Live Project →](https://sneakers-store-project.vercel.app/)**
 
 ## ✨ Features
 
