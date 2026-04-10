@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { CircularProgress, Typography, Box } from "@mui/material";
 import ProductCard from "../../components/ProductCard";
 import SearchBar from "../../components/SearchBar";
@@ -29,7 +29,7 @@ const ProductList = () => {
 
   const [filters, setFilters] = useState({
     minPrice: 0,
-    maxPrice: maxPrice,
+    maxPrice: null, // null means "use the full range" - avoids needing to sync with maxPrice
     gender: "All",
   });
 
@@ -41,34 +41,33 @@ const ProductList = () => {
 
     // Search by brand
     if (searchTerm) {
+      const term = searchTerm.toLowerCase();
       result = result.filter((product) =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()),
+        product.name.toLowerCase().includes(term),
       );
     }
 
-    // Price filter
-    if (filters.minPrice > 0) {
-      result = result.filter(
-        (p) => parseFloat(p.price) >= parseFloat(filters.minPrice),
-      );
-    }
-    if (filters.maxPrice < maxPrice) {
-      result = result.filter(
-        (p) => parseFloat(p.price) <= parseFloat(filters.maxPrice),
-      );
+    // Price filter - single pass for both min and max
+    const minP = filters.minPrice;
+    const maxP = filters.maxPrice !== null ? filters.maxPrice : maxPrice;
+    if (minP > 0 || maxP < maxPrice) {
+      result = result.filter((p) => {
+        const price = parseFloat(p.price);
+        return price >= minP && price <= maxP;
+      });
     }
 
-    // Gender filter - ИСПРАВЛЕНО!
+    // Gender filter
     if (filters.gender !== "All") {
       result = result.filter((p) => {
         const name = p.name.toLowerCase();
         const gender = filters.gender.toLowerCase();
 
         if (gender === "men") {
-          // Ищем "men" но НЕ "women"
+          // Match "men" but NOT "women"
           return name.includes("men") && !name.includes("women");
         } else if (gender === "women") {
-          // Ищем "women"
+          // Match "women"
           return name.includes("women");
         }
 
@@ -97,21 +96,21 @@ const ProductList = () => {
     return result;
   }, [searchTerm, filters, sortBy, products, maxPrice]);
 
-  const handleFilterChange = (key, value) => {
+  const handleFilterChange = useCallback((key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
     setCurrentPage(1); // Reset to first page when filters change
-  };
+  }, []);
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     setFilters({
       minPrice: 0,
-      maxPrice: maxPrice,
+      maxPrice: null,
       gender: "All",
     });
     setSearchTerm("");
     setSortBy("default");
     setCurrentPage(1);
-  };
+  }, []);
 
   if (loading) {
     return (
@@ -162,7 +161,7 @@ const ProductList = () => {
         filters={filters}
         onFilterChange={handleFilterChange}
         onReset={handleReset}
-        products={products}
+        maxPrice={maxPrice}
       />
 
       {/* Products Count */}

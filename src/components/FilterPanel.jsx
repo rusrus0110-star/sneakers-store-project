@@ -1,19 +1,7 @@
 import { Box, Typography, Button, Chip, Stack, Slider } from "@mui/material";
-import { useMemo } from "react";
 
-const FilterPanel = ({ filters, onFilterChange, onReset, products }) => {
+const FilterPanel = ({ filters, onFilterChange, onReset, maxPrice = 500 }) => {
   const genders = ["All", "Men", "Women"];
-
-  // Calculate max price from products using useMemo
-  const maxPrice = useMemo(() => {
-    if (products && Array.isArray(products) && products.length > 0) {
-      const prices = products
-        .map((p) => parseFloat(p.price))
-        .filter((p) => !isNaN(p));
-      return Math.ceil(Math.max(...prices));
-    }
-    return 500;
-  }, [products]);
 
   // Derive priceRange directly from filters (no local state sync needed)
   const priceRange = [
@@ -28,10 +16,6 @@ const FilterPanel = ({ filters, onFilterChange, onReset, products }) => {
   const handlePriceChange = (event, newValue) => {
     onFilterChange("minPrice", newValue[0]);
     onFilterChange("maxPrice", newValue[1]);
-  };
-
-  const handleResetLocal = () => {
-    onReset();
   };
 
   return (
@@ -80,7 +64,7 @@ const FilterPanel = ({ filters, onFilterChange, onReset, products }) => {
           <Button
             variant="contained"
             size="small"
-            onClick={handleResetLocal}
+            onClick={onReset}
             sx={{
               display: { xs: "flex", md: "none" },
               backgroundColor: "#555",
@@ -211,7 +195,7 @@ const FilterPanel = ({ filters, onFilterChange, onReset, products }) => {
         <Button
           variant="contained"
           size="small"
-          onClick={handleResetLocal}
+          onClick={onReset}
           sx={{
             display: { xs: "none", md: "flex" },
             alignSelf: "flex-end",

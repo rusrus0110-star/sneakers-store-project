@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import ProductsContext from "./context";
 
 import {
@@ -17,7 +17,6 @@ const ProductsProvider = ({ children }) => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        console.log("🔄 START LOADING");
         setLoading(true);
         setError("");
 
@@ -25,9 +24,6 @@ const ProductsProvider = ({ children }) => {
           fetchProductsApi(),
           fetchCartApi(),
         ]);
-
-        console.log("productsResponse:", productsResponse);
-        console.log("cartResponse:", cartResponse);
 
         const normalizedProducts = Array.isArray(productsResponse)
           ? productsResponse
@@ -37,16 +33,12 @@ const ProductsProvider = ({ children }) => {
           ? cartResponse
           : cartResponse?.data || [];
 
-        console.log("✅ Setting products:", normalizedProducts.length);
-        console.log("✅ Setting cart:", normalizedCart.length);
-
         setProducts(normalizedProducts);
         setCartData(normalizedCart);
       } catch (err) {
-        console.error("❌ ERROR:", err);
+        console.error("Failed to load data:", err);
         setError("Failed to load data");
       } finally {
-        console.log("🏁 SETTING LOADING = FALSE");
         setLoading(false);
       }
     };
@@ -54,7 +46,7 @@ const ProductsProvider = ({ children }) => {
     loadData();
   }, []);
 
-  const addToCart = async (item) => {
+  const addToCart = useCallback(async (item) => {
     try {
       const createdItem = await addToCartApi(item);
       setCartData((prev) => [...prev, createdItem]);
@@ -62,9 +54,9 @@ const ProductsProvider = ({ children }) => {
       console.error("Failed to add item:", err);
       setError("Failed to add item");
     }
-  };
+  }, []);
 
-  const removeFromCart = async (id) => {
+  const removeFromCart = useCallback(async (id) => {
     try {
       await deleteFromCartApi(id);
       setCartData((prev) => prev.filter((item) => item.id !== id));
@@ -72,33 +64,28 @@ const ProductsProvider = ({ children }) => {
       console.error("Failed to remove item:", err);
       setError("Failed to remove item");
     }
-  };
+  }, []);
 
-  const totalPrice = cartData.reduce((sum, item) => {
-    return sum + Number(item.price || 0);
-  }, 0);
+  const totalPrice = useMemo(
+    () => cartData.reduce((sum, item) => sum + Number(item.price || 0), 0),
+    [cartData],
+  );
 
-  console.log(
-    "🎨 RENDER - loading:",
-    loading,
-    "products:",
-    products.length,
-    "cart:",
-    cartData.length,
+  const contextValue = useMemo(
+    () => ({
+      products,
+      cartData,
+      loading,
+      error,
+      addToCart,
+      removeFromCart,
+      totalPrice,
+    }),
+    [products, cartData, loading, error, addToCart, removeFromCart, totalPrice],
   );
 
   return (
-    <ProductsContext.Provider
-      value={{
-        products,
-        cartData,
-        loading,
-        error,
-        addToCart,
-        removeFromCart,
-        totalPrice,
-      }}
-    >
+    <ProductsContext.Provider value={contextValue}>
       {children}
     </ProductsContext.Provider>
   );

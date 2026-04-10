@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { memo, useState } from "react";
 import {
   Box,
   Card,
@@ -156,4 +156,4 @@ const ProductCard = ({ product, onAdd = () => {}, loading = false }) => {
   );
 };
 
-export default ProductCard;
+export default memo(ProductCard);
